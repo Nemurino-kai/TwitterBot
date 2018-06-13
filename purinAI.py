@@ -120,5 +120,5 @@ while (1):
         day_tweet+="\nみんな早めに寝るプリ！ププリン～♪"
         api.update_status(day_tweet)
         tweet_count=0
-        prev_day=datetime.datetime.today()
+        prev_day=datetime.datetime.today().day
 # --------------------------------------------------------------

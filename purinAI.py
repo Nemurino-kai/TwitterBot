@@ -21,7 +21,7 @@ auth = tweepy.OAuthHandler(CK, CS)
 auth.set_access_token(AT, AS)
 
 api = tweepy.API(auth)
-# 前回の取得したタイムラインより先のタイムラインを100以下取得してくる(10分に一度チェックで1時間回せばok)
+# タイムラインを取得する
 u = api.get_user(screen_name=N)
 end_tweet_id = 0
 
@@ -33,7 +33,7 @@ public_tweets = api.user_timeline(id=u.id)
 ID_LIST = []
 hazimete = True
 # つぶやかれた回数を記録しておく
-tweet_count =22
+tweet_count =0
 # 前回TLを調べた日付を記録しておく
 prev_day = datetime.datetime.today().day
 

@@ -33,9 +33,9 @@ public_tweets = api.user_timeline(id=u.id)
 ID_LIST = []
 hazimete = True
 # つぶやかれた回数を記録しておく
-tweet_count =7
+tweet_count =22
 # 前回TLを調べた日付を記録しておく
-prev_day = datetime.datetime.today()
+prev_day = datetime.datetime.today().day
 
 # コメント反応用のテキストを読み込む
 lines = [line.rstrip() for line in open('puripuri_script.txt',encoding="utf-8")]
@@ -113,14 +113,12 @@ while (1):
     time.sleep(60)
     print("1分経過")
     time.sleep(60)
-    print("2分経過")
-    time.sleep(60)
 
     #日にちを跨いだら、今日のつぶやき回数をいう
-   # if(datetime.datetime.today()!=prev_day):
-   #     day_tweet="0時を過ぎたプリ！\n昨日のプリン反応回数は"+str(tweet_count)+"回だったプリ"
-   #     day_tweet+="\nみんな早めに寝るプリ！ププリン～♪"
-   #     api.update_status(day_tweet)
-   #     tweet_count=0
-   #     prev_day=datetime.datetime.today()
+    if(datetime.datetime.today().day!=prev_day):
+        day_tweet="0時を過ぎたプリ！\n昨日のプリン反応回数は"+str(tweet_count)+"回だったプリ"
+        day_tweet+="\nみんな早めに寝るプリ！ププリン～♪"
+        api.update_status(day_tweet)
+        tweet_count=0
+        prev_day=datetime.datetime.today()
 # --------------------------------------------------------------

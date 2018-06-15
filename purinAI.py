@@ -1,9 +1,32 @@
 # -*- coding: utf-8 -*-
 
+# 天気を取得する関数
+def fetch_weather():
+    chiba = 120010
+    url = 'http://weather.livedoor.com/forecast/rss/area/' + str(chiba)+'.xml'
+    today = str(datetime.date.today().day)
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, 'html.parser')
+    mes = ''
+    for item in soup.find_all('item'):
+        title = item.find('title').string
+        if title.find(today + '日') != -1:
+            mes = title
+            break
+
+    body = ''
+
+    if mes.find('雨') != -1:
+        body += 'なんだか雲行きが怪しいプリ...\n傘を持って出かけるプリ！\n'
+
+    return body
+
 import tweepy
 import datetime
 import re
 import config
+import requests
+from bs4 import BeautifulSoup
 
 # TweetをTweepyで取得用のAPI
 CK = config.CONSUMER_KEY
@@ -13,7 +36,7 @@ AS = config.ACCESS_TOKEN_SECRET
 N = config.NAME # 監視したいユーザーのTwitterID
 
 import time
-
+print(fetch_weather())
 time.sleep(6)
 
 # Getting Tweet

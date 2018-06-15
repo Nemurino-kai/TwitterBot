@@ -18,6 +18,8 @@ def fetch_weather():
 
     if mes.find('雨') != -1:
         body += 'なんだか雲行きが怪しいプリ...\n傘を持って出かけるプリ！\n'
+    if mes.find('晴') != -1:
+        body += '今日の天気は晴れプリ！\nいい日和だプリ！\n'
 
     return body
 
@@ -57,12 +59,10 @@ ID_LIST = []
 hazimete = True
 # つぶやかれた回数を記録しておく
 tweet_count =0
-# 前回TLを調べた日付を記録しておく
-prev_day = datetime.datetime.today().day
 
 # コメント反応用のテキストを読み込む
 lines = [line.rstrip() for line in open('puripuri_script.txt',encoding="utf-8")]
-while (1):
+while True:
 
     public_tweets = api.user_timeline(id=u.id)
 
@@ -87,7 +87,7 @@ while (1):
 
     print("今回のTweet_IDリスト"),
     print(ID_LIST)
-    while (1):
+    while True:
         if ID_LIST == []:
             break
         tweet_ID = ID_LIST.pop()
@@ -135,13 +135,17 @@ while (1):
 
     time.sleep(60)
     print("1分経過")
-    time.sleep(60)
 
-    #日にちを跨いだら、今日のつぶやき回数をいう
-    if(datetime.datetime.today().day!=prev_day):
+    # 0時頃、昨日のつぶやき回数をいう
+    if datetime.datetime(2000, 1, 1, 0, 0, 0).time() <= datetime.datetime.today().time() < datetime.datetime(2000, 1, 1, 0, 1, 0).time():
         day_tweet="0時を過ぎたプリ！\n昨日のプリン反応回数は"+str(tweet_count)+"回だったプリ"
         day_tweet+="\nみんな早めに寝るプリ！ププリン～♪"
         api.update_status(day_tweet)
         tweet_count=0
-        prev_day=datetime.datetime.today().day
+
+    # 8時頃、天気を呟く
+    if datetime.datetime(2000, 1, 1, 8, 0, 0).time() <= datetime.datetime.today().time() < datetime.datetime(2000, 1, 1, 8, 1, 0).time():
+        day_tweet = "おはプリ！8時になったプリ！\n"
+        day_tweet += fetch_weather()
+        api.update_status(day_tweet)
 # --------------------------------------------------------------

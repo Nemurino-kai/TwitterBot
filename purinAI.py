@@ -56,13 +56,11 @@ def tweet():
 
     public_tweets = api.user_timeline(id=u.id)
 
-
+    pre_time = datetime.datetime.today().time()
 
     # --------------------------------------------------------------
     ID_LIST = []
-    hazimete = True
-    # つぶやかれた回数を記録しておく
-    tweet_count =0
+    first_time = True
 
     # コメント反応用のテキストを読み込む
     lines = [line.rstrip() for line in open('puripuri_script.txt',encoding="utf-8")]
@@ -76,7 +74,7 @@ def tweet():
                 TMP = tweet.id
                 renew = True
 
-            if tweet.id > end_tweet_id and hazimete == False:
+            if tweet.id > end_tweet_id and first_time == False:
                 ID_LIST.append(tweet.id)
                 print(tweet.id),
                 print(":"),
@@ -85,7 +83,7 @@ def tweet():
                 break
 
         end_tweet_id = TMP
-        hazimete = False
+        first_time = False
         print("Latest tweet ID>>"),
         print(end_tweet_id)
 
@@ -99,7 +97,6 @@ def tweet():
             # userから誰かにリプライが送られたら反応
             if status.in_reply_to_screen_name is not None and str(status.user.screen_name) == N:
                 print("reply")
-                tweet_count +=1
                 # リプライ元のIDを取得
                 replied_id = status.in_reply_to_status_id
                 # リプライ元のステータスを取得
@@ -111,7 +108,7 @@ def tweet():
                     stat_time = str(status.created_at)
                     new_qkou_time = datetime.datetime.strptime(qkou_time, "%Y-%m-%d %H:%M:%S")
                     new_stat_time = datetime.datetime.strptime(stat_time, "%Y-%m-%d %H:%M:%S")
-                    sabun_time = new_stat_time - new_qkou_time #- datetime.timedelta(hours=9)
+                    sabun_time = new_stat_time - new_qkou_time
                     print(qkou_time)  # リプライ元のやつ
                     tweet = "@" + str(status.user.screen_name)
                     # ツイート元のセリフに応じて返答する
@@ -140,19 +137,11 @@ def tweet():
         time.sleep(60)
         print("1分経過")
 
-        # 0時頃、昨日のつぶやき回数をいう
-        if datetime.datetime(2000, 1, 1, 0, 0, 0).time() <= datetime.datetime.today().time() < datetime.datetime(2000, 1, 1, 0, 1, 0).time():
-            day_tweet="0時を過ぎたプリ！\n昨日のプリン反応回数は"+str(tweet_count)+"回だったプリ"
-            day_tweet+="\nみんな早めに寝るプリ！ププリン～♪"
-            api.update_status(day_tweet)
-            tweet_count=0
-
         # 8時頃、天気を呟く
-        if datetime.datetime(2000, 1, 1, 8, 0, 0).time() <= datetime.datetime.today().time() < datetime.datetime(2000, 1, 1, 8, 1, 0).time():
+        if pre_time < datetime.datetime(2000, 1, 1, 8, 0, 0).time() <= datetime.datetime.today().time():
             day_tweet = "おはプリ！8時になったプリ！\n"
             day_tweet += fetch_weather()
             api.update_status(day_tweet)
 
-
+        pre_time = datetime.datetime.today().time()
     # --------------------------------------------------------------
-

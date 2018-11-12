@@ -50,11 +50,8 @@ def tweet():
     auth.set_access_token(AT, AS)
 
     api = tweepy.API(auth)
-    # タイムラインを取得する
     u = api.get_user(screen_name=N)
     end_tweet_id = 0
-
-    public_tweets = api.user_timeline(id=u.id)
 
     pre_time = datetime.datetime.today().time()
 
@@ -65,7 +62,7 @@ def tweet():
     # コメント反応用のテキストを読み込む
     lines = [line.rstrip() for line in open('puripuri_script.txt',encoding="utf-8")]
     while True:
-
+        # タイムラインを取得する
         public_tweets = api.user_timeline(id=u.id)
 
         renew = False
@@ -99,35 +96,35 @@ def tweet():
                 print("reply")
                 # リプライ元のIDを取得
                 replied_id = status.in_reply_to_status_id
-                # リプライ元のステータスを取得
                 try:
-                    #いいねを飛ばす
+                    # いいねを飛ばす
                     api.create_favorite(status.id)
-                    qkou_status = api.get_status(replied_id)
-                    qkou_time = str(qkou_status.created_at)
-                    stat_time = str(status.created_at)
-                    new_qkou_time = datetime.datetime.strptime(qkou_time, "%Y-%m-%d %H:%M:%S")
-                    new_stat_time = datetime.datetime.strptime(stat_time, "%Y-%m-%d %H:%M:%S")
-                    sabun_time = new_stat_time - new_qkou_time
-                    print(qkou_time)  # リプライ元のやつ
+                    # リプライ元のステータスを取得
+                    orig_status = api.get_status(replied_id)
+                    orig_time = str(orig_status.created_at)
+                    reply_time = str(status.created_at)
+                    new_orig_time = datetime.datetime.strptime(orig_time, "%Y-%m-%d %H:%M:%S")
+                    new_reply_time = datetime.datetime.strptime(reply_time, "%Y-%m-%d %H:%M:%S")
+                    time_diff = new_reply_time - new_orig_time
+                    print(orig_time)  # リプライ元の投稿時間
                     tweet = "@" + str(status.user.screen_name)
                     # ツイート元のセリフに応じて返答する
                     for i in range(int(len(lines)/2)):
-                        if re.search(lines[i*2], str(qkou_status.text)):
+                        if re.search(lines[i*2], str(orig_status.text)):
                             tweet += "\n" + lines[i*2+1]
 
-                    tweet += "\n反応までの時間は" + str(sabun_time) + "だったプリ"
+                    tweet += "\n反応までの時間は" + str(time_diff) + "だったプリ"
                     # 1分以下なら
-                    if new_stat_time < new_qkou_time + datetime.timedelta(minutes=1):
+                    if new_reply_time < new_orig_time + datetime.timedelta(minutes=1):
                         tweet += "\nすごく早いプリ！すごいプリ！"
                     # ちょうど1分なら
-                    if new_stat_time - new_qkou_time == datetime.timedelta(minutes=1):
+                    if new_reply_time - new_orig_time == datetime.timedelta(minutes=1):
                         tweet += "\nちょうど1分プリ！すごいプリ！"
                     # ちょうど3分なら
-                    if new_stat_time - new_qkou_time == datetime.timedelta(minutes=3):
+                    if new_reply_time - new_orig_time == datetime.timedelta(minutes=3):
                         tweet += "\nちょうど3分プリ！カップ麺ができたプリ！"
                     #15分以上なら
-                    if new_stat_time - new_qkou_time > datetime.timedelta(minutes=15):
+                    if new_reply_time - new_orig_time > datetime.timedelta(minutes=15):
                         tweet += "\nこれは...人力botの波動を感じるプリ！"
                     api.update_status(status=tweet, in_reply_to_status_id=status.id)
                 except tweepy.error.TweepError:
@@ -145,3 +142,5 @@ def tweet():
 
         pre_time = datetime.datetime.today().time()
     # --------------------------------------------------------------
+
+tweet()

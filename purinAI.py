@@ -142,5 +142,3 @@ def tweet():
 
         pre_time = datetime.datetime.today().time()
     # --------------------------------------------------------------
-
-tweet()
